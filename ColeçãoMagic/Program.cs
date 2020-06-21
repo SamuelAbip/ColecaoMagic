@@ -14,15 +14,16 @@ namespace ColeçãoMagic
             "1 - Adicionar cartas à sua coleção.",
             "2 - Imprimir a sua coleção."
         };
-        private static List<string> Cartas = new List<string>();
+        
         static void Main(string[] args)
         {
+            var coleção = new ColeçãoMagic();
             Console.WriteLine("Bem-vindo ao collection builder de Magic. Escolha uma das opções:");
             while (true)
             {
                 ImprmirOpções();
-                OpçõesMenu opção = LerOpção();
-                RealizarAção(opção);
+                var opção = LerOpção();
+                RealizarAção(opção, coleção);
                 if (opção == OpçõesMenu.Sair)
                 {
                     Console.WriteLine("Saindo do programa.");
@@ -50,17 +51,17 @@ namespace ColeçãoMagic
             }
         }
 
-        private static void RealizarAção(OpçõesMenu opção)
+        private static void RealizarAção(OpçõesMenu opção, ColeçãoMagic coleção)
         {
             switch (opção)
             {
                 case OpçõesMenu.Sair:
                     break;
                 case OpçõesMenu.AdicionarCartas:
-                    AdicionarCartas();
+                    AdicionarCartas(coleção);
                     break;
                 case OpçõesMenu.ImprimirColeção:
-                    ImprimirColeção();
+                    ImprimirColeção(coleção);
                     break;
                 case OpçõesMenu.Inválida:
                     break;
@@ -69,12 +70,13 @@ namespace ColeçãoMagic
             }
         }
 
-        private static void AdicionarCartas()
+        private static void AdicionarCartas(ColeçãoMagic coleção)
         {
-            string carta = LerCarta();
-            if (!Cartas.Contains(carta))
+            Console.WriteLine("Você optou por adicionar uma carta. Qual o nome da carta a ser adicionada:");
+            string carta = Console.ReadLine();
+            bool foiInserida = coleção.AdicionarCarta(carta);
+            if (foiInserida)
             {
-                Cartas.Add(carta);
                 Console.WriteLine("Carta adicionada à sua coleção.");
             }
             else
@@ -83,40 +85,16 @@ namespace ColeçãoMagic
             }
         }
 
-        private static string LerCarta()
+        private static void ImprimirColeção(ColeçãoMagic coleção)
         {
-            Console.WriteLine("Você optou por adicionar uma carta. Qual o nome da carta a ser adicionada:");
-            string cartaDigitada = Console.ReadLine();
-            return FormatarNomeCarta(cartaDigitada);
-        }
-
-        private static string FormatarNomeCarta(string cartaDigitada)
-        {
-            string[] formatandoCarta = cartaDigitada.Split(" ");
-            List<string> acumuladorString = new List<string>();
-            foreach (string palavra in formatandoCarta)
-            {
-                string nomeFormatado = palavra.Substring(0, 1).ToUpper() + palavra.Substring(1).ToLower();
-                acumuladorString.Add(nomeFormatado);
-            }
-            string cartaAdicionada = string.Join(" ", acumuladorString);
-            return cartaAdicionada;
-        }
-
-        private static void ImprimirColeção()
-        {
-            bool checaConteúdoLista = Cartas.Any();
-            if (!checaConteúdoLista)
+            if (coleção.EstáVazia())
             {
                 Console.WriteLine("Sua lista está vazia no momento.");
             }
             else
             {
                 Console.WriteLine("Sua lista atual contém as seguintes cartas:");
-                foreach (string carta in Cartas)
-                {
-                    Console.WriteLine(carta);
-                }
+                Console.WriteLine(coleção.FormaImpressa());
             }
         }
     }
